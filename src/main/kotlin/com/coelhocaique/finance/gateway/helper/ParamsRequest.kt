@@ -1,7 +1,7 @@
 package com.coelhocaique.finance.gateway.helper
 
 
-data class FetchRequest(
+data class ParamsRequest(
         val id: String? = null,
         val headers: Map<String, Any> = mapOf(),
         val queryParams: Map<String, Any> = mapOf()

@@ -13,7 +13,7 @@ object RequestParameterHandler {
                 .onErrorMap { business(INVALID_REQUEST, it) }
     }
 
-    fun retrieveFetchRequest(req: ServerRequest): Mono<FetchRequest> {
+    fun retrieveParamsRequest(req: ServerRequest): Mono<ParamsRequest> {
         val id = retrieveId(req)
         val headers = req.headers()
                 .header("Authorization")
@@ -22,7 +22,16 @@ object RequestParameterHandler {
 
         val params = req.queryParams().toSingleValueMap()
 
-        return just(FetchRequest(id, headers, params))
+        return just(ParamsRequest(id, headers, params))
+    }
+
+    fun retrieveHeaders(req: ServerRequest): ParamsRequest {
+        val headers = req.headers()
+                .header("Authorization")
+                .map { "Authorization" to it }
+                .toMap()
+
+        return ParamsRequest(headers = headers)
     }
 
     private fun retrieveId(req: ServerRequest): String? {

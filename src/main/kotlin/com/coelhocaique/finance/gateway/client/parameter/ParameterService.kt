@@ -1,4 +1,4 @@
-package com.coelhocaique.finance.gateway.client.income
+package com.coelhocaique.finance.gateway.client.parameter
 
 import com.coelhocaique.finance.gateway.client.HttpClientService
 import com.coelhocaique.finance.gateway.helper.ParamsRequest
@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono
 
 
 @Service
-class IncomeService {
+class ParameterService {
 
     @Value("\${personal-finance-api.url}")
     private lateinit var baseUrl: String
@@ -17,32 +17,31 @@ class IncomeService {
     @Autowired
     private lateinit var client: HttpClientService
 
-    fun create(request: IncomeRequest?, paramsRequest: ParamsRequest): Mono<IncomeResponse> {
+    fun create(request: ParameterRequest?, paramsRequest: ParamsRequest): Mono<ParameterResponse> {
         return client.postRequest(
-                baseUrl.plus("/v1/income"),
+                baseUrl.plus("/v1/parameter"),
                 request,
-                IncomeResponse::class.java,
+                ParameterResponse::class.java,
                 paramsRequest.headers)
     }
 
-    fun retrieveById(request: ParamsRequest): Mono<IncomeResponse> {
+    fun retrieveById(request: ParamsRequest): Mono<ParameterResponse> {
         return client.getRequest(
-                baseUrl.plus("/v1/income/${request.id}"),
-                IncomeResponse::class.java,
+                baseUrl.plus("/v1/parameter/${request.id}"),
+                ParameterResponse::class.java,
                 request.headers)
     }
 
-    fun retrieveByParam(request: ParamsRequest): Mono<List<IncomeResponse>> {
+    fun retrieveByParam(request: ParamsRequest): Mono<List<ParameterResponse>> {
         return client.getRequest(
-                baseUrl.plus("/v1/income?${request.getQueryParam()}"),
+                baseUrl.plus("/v1/parameter?${request.getQueryParam()}"),
                 List::class.java,
-                request.headers) as Mono<List<IncomeResponse>>
+                request.headers) as Mono<List<ParameterResponse>>
     }
 
     fun deleteById(request: ParamsRequest): Mono<Void> {
         return client.deleteRequest(
-                baseUrl.plus("/v1/income/${request.id}"),
+                baseUrl.plus("/v1/parameter/${request.id}"),
                 request.headers)
     }
-
 }

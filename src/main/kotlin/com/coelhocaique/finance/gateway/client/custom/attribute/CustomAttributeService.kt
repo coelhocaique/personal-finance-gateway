@@ -1,4 +1,4 @@
-package com.coelhocaique.finance.gateway.client.income
+package com.coelhocaique.finance.gateway.client.custom.attribute
 
 import com.coelhocaique.finance.gateway.client.HttpClientService
 import com.coelhocaique.finance.gateway.helper.ParamsRequest
@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono
 
 
 @Service
-class IncomeService {
+class CustomAttributeService {
 
     @Value("\${personal-finance-api.url}")
     private lateinit var baseUrl: String
@@ -17,32 +17,24 @@ class IncomeService {
     @Autowired
     private lateinit var client: HttpClientService
 
-    fun create(request: IncomeRequest?, paramsRequest: ParamsRequest): Mono<IncomeResponse> {
+    fun create(request: CustomAttributeRequest?, paramsRequest: ParamsRequest): Mono<CustomAttributeResponse> {
         return client.postRequest(
-                baseUrl.plus("/v1/income"),
+                baseUrl.plus("/v1/custom-attribute"),
                 request,
-                IncomeResponse::class.java,
+                CustomAttributeResponse::class.java,
                 paramsRequest.headers)
     }
 
-    fun retrieveById(request: ParamsRequest): Mono<IncomeResponse> {
+    fun retrieveByParam(request: ParamsRequest): Mono<List<CustomAttributeResponse>> {
         return client.getRequest(
-                baseUrl.plus("/v1/income/${request.id}"),
-                IncomeResponse::class.java,
-                request.headers)
-    }
-
-    fun retrieveByParam(request: ParamsRequest): Mono<List<IncomeResponse>> {
-        return client.getRequest(
-                baseUrl.plus("/v1/income?${request.getQueryParam()}"),
+                baseUrl.plus("/v1/custom-attribute?${request.getQueryParam()}"),
                 List::class.java,
-                request.headers) as Mono<List<IncomeResponse>>
+                request.headers) as Mono<List<CustomAttributeResponse>>
     }
 
     fun deleteById(request: ParamsRequest): Mono<Void> {
         return client.deleteRequest(
-                baseUrl.plus("/v1/income/${request.id}"),
+                baseUrl.plus("/v1/custom-attribute/${request.id}"),
                 request.headers)
     }
-
 }

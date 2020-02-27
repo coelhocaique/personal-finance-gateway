@@ -29,8 +29,7 @@ data class IncomeResponse (
         val accountId: UUID? = null,
         val discounts: List<NestedObject>? = emptyList(),
         val additions: List<NestedObject>? = emptyList(),
-        val creationDate: LocalDateTime? = null,
-        val links: List<Map<String, String>>? = null
+        val creationDate: LocalDateTime? = null
 )
 
 data class NestedObject (

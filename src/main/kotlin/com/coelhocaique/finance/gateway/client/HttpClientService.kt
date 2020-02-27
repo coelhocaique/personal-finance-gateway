@@ -19,7 +19,7 @@ class HttpClientService {
     @Autowired
     private lateinit var mapper: ObjectMapper
 
-    fun <T> send(request: HttpRequest, clazz: Class<T>): Mono<T> {
+    fun <T> send(request: HttpRequest, clazz: Class<T>, successStatus: Int): Mono<T> {
         val httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .build()
@@ -29,8 +29,11 @@ class HttpClientService {
 
         logger().info("status=".plus(status).plus(", uri=").plus(request.uri().toString()))
 
-        if (status <= 201) {
-            return Mono.just(mapper.readValue(response.body(), clazz))
+        if (status != successStatus) {
+            return if (status != 204)
+                Mono.just(mapper.readValue(response.body(), clazz))
+            else
+                Mono.empty()
         } else {
             val error = mapper.readValue(response.body(), ErrorResponse::class.java)
             throw ApiException(status, error.errors)
@@ -44,7 +47,7 @@ class HttpClientService {
 
         val httpRequest = buildHttpRequest(uri, body, "POST", headers)
 
-        return send(httpRequest, clazz)
+        return send(httpRequest, clazz, 201)
     }
 
     fun <T> getRequest(uri: String, clazz: Class<T>,
@@ -53,7 +56,15 @@ class HttpClientService {
 
         val httpRequest = buildHttpRequest(uri, null, "GET", headers)
 
-        return send(httpRequest, clazz)
+        return send(httpRequest, clazz, 200)
+    }
+
+    fun deleteRequest(uri: String, headers: Map<String, Any> = mapOf()
+    ): Mono<Void> {
+
+        val httpRequest = buildHttpRequest(uri, null, "DELETE", headers)
+
+        return send(httpRequest, Void::class.java, 204)
     }
 
     private fun buildHttpRequest(uri: String,

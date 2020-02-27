@@ -20,7 +20,7 @@ object ResponseHandler {
                         else -> mapException(it)
                     }
                 }
-                .switchIfEmpty { ServerResponse.notFound().build() }
+                .switchIfEmpty { ServerResponse.noContent().build() }
     }
 
     private fun mapException(it: Throwable): Mono<ServerResponse> {

@@ -1,4 +1,4 @@
-package com.coelhocaique.finance.gateway.client.income
+package com.coelhocaique.finance.gateway.client.debt
 
 import com.coelhocaique.finance.gateway.helper.RequestParameterHandler.extractBody
 import com.coelhocaique.finance.gateway.helper.RequestParameterHandler.retrieveHeaders
@@ -10,10 +10,10 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 
 @Component
-class IncomeHandler (private val service: IncomeService) {
+class DebtHandler (private val service: DebtService) {
 
     fun create(req: ServerRequest): Mono<ServerResponse> {
-        val response = extractBody<IncomeRequest>(req)
+        val response = extractBody<DebtRequest>(req)
                 .flatMap { service.create(it, retrieveHeaders(req)) }
 
         return generateResponse(response, 201)
@@ -36,6 +36,13 @@ class IncomeHandler (private val service: IncomeService) {
     fun deleteById(req: ServerRequest): Mono<ServerResponse> {
         val response = retrieveParamsRequest(req)
                 .flatMap { service.deleteById(it) }
+
+        return generateResponse(response)
+    }
+
+    fun deleteByParam(req: ServerRequest): Mono<ServerResponse> {
+        val response = retrieveParamsRequest(req)
+                .flatMap { service.deleteByParam(it) }
 
         return generateResponse(response)
     }
