@@ -1,33 +1,69 @@
 package com.coelhocaique.finance.gateway.client.dashboard
 
-import com.coelhocaique.finance.gateway.client.custom.attribute.CustomAttributeRequest
-import com.coelhocaique.finance.gateway.client.custom.attribute.CustomAttributeResponse
-import com.coelhocaique.finance.gateway.client.custom.attribute.CustomAttributeService
+import com.coelhocaique.finance.gateway.client.dashboard.processor.DashboardDataProcessor
+import com.coelhocaique.finance.gateway.client.debt.DebtResponse
+import com.coelhocaique.finance.gateway.client.debt.DebtService
+import com.coelhocaique.finance.gateway.client.debt.threshold.DebtThresholdService
+import com.coelhocaique.finance.gateway.client.income.IncomeResponse
+import com.coelhocaique.finance.gateway.client.income.IncomeService
+import com.coelhocaique.finance.gateway.client.parameter.ParameterResponse
+import com.coelhocaique.finance.gateway.helper.Fields.FROM_DATE
+import com.coelhocaique.finance.gateway.helper.Fields.TO_DATE
+import com.coelhocaique.finance.gateway.helper.Messages.INVALID_PARAMETER
 import com.coelhocaique.finance.gateway.helper.ParamsRequest
-import com.coelhocaique.finance.gateway.helper.Fields.DEBT_TAG
-import com.coelhocaique.finance.gateway.helper.Fields.PROPERTY_NAME
+import com.coelhocaique.finance.gateway.helper.exception.ApiException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.core.publisher.Mono.just
 
 
 @Service
 class DashboardService {
 
     @Autowired
-    private lateinit var customAttributeService: CustomAttributeService
+    private lateinit var thresholdService: DebtThresholdService
 
-    fun create(request: CustomAttributeRequest?, paramsRequest: ParamsRequest): Mono<CustomAttributeResponse> {
-        return customAttributeService.create(request?.let { it.copy(name = DEBT_TAG) }, paramsRequest)
+    @Autowired
+    private lateinit var debtService: DebtService
+
+    @Autowired
+    private lateinit var incomeService: IncomeService
+
+    @Autowired
+    private lateinit var dataProcessors: Set<DashboardDataProcessor>
+
+    fun retrieve(request: ParamsRequest): Mono<DashboardResponse> {
+        return just(request)
+                .map { it.queryParams }
+                .map { castToPair(it) }
+                .flatMap { retrieveData(it, request)}
     }
 
-    fun retrieveAll(request: ParamsRequest): Mono<List<CustomAttributeResponse>> {
-        return customAttributeService.retrieveByParam(
-                request.copy(queryParams = mapOf(PROPERTY_NAME to DEBT_TAG)))
+    private fun castToPair(params: Map<String, Any>): Pair<String, String> {
+        val from = params[FROM_DATE] ?: throw ApiException.business(INVALID_PARAMETER.format(FROM_DATE))
+        val to = params[TO_DATE] ?: throw ApiException.business(INVALID_PARAMETER.format(TO_DATE))
+        return Pair(from.toString(), to.toString())
     }
 
-    fun deleteById(request: ParamsRequest): Mono<Void> {
-        return customAttributeService.deleteById(request)
+    private fun retrieveData(dates: Pair<String, String>,
+                             request: ParamsRequest): Mono<DashboardResponse> {
+
+        val newRequest = request.copy(queryParams = mapOf(FROM_DATE to dates.first, TO_DATE to dates.second))
+        val thresholds = thresholdService.retrieveByParam(newRequest)
+        val incomes = incomeService.retrieveByParam(newRequest)
+        val debts = debtService.retrieveByParam(request)
+
+        return Mono.zip(thresholds, incomes, debts)
+                .flatMap { collectData(it.t1, it.t2, it.t3) }
     }
 
+    private fun collectData(parameters: List<ParameterResponse>,
+                            incomes: List<IncomeResponse>,
+                            debts: List<DebtResponse>): Mono<DashboardResponse> {
+        val dashboard = dataProcessors.map { it.process(parameters, incomes, debts) }
+                .fold(mapOf<String, Any>()) { acc, current -> acc + current }
+
+        return just(DashboardResponse(dashboard))
+    }
 }

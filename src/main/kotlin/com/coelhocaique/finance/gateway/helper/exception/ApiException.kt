@@ -8,6 +8,6 @@ data class ApiException(val status: Int,
 ): RuntimeException(ex) {
 
     companion object ApiExceptionHelper {
-        fun business(message: String, e: Throwable) = ApiException(400, listOf(message), e)
+        fun business(message: String, e: Throwable? = null) = ApiException(400, listOf(message), e)
     }
 }
