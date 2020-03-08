@@ -12,26 +12,17 @@ import com.coelhocaique.finance.gateway.helper.Fields.TO_DATE
 import com.coelhocaique.finance.gateway.helper.Messages.INVALID_PARAMETER
 import com.coelhocaique.finance.gateway.helper.ParamsRequest
 import com.coelhocaique.finance.gateway.helper.exception.ApiException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Mono.just
 
 
 @Service
-class DashboardService {
-
-    @Autowired
-    private lateinit var thresholdService: DebtThresholdService
-
-    @Autowired
-    private lateinit var debtService: DebtService
-
-    @Autowired
-    private lateinit var incomeService: IncomeService
-
-    @Autowired
-    private lateinit var dataProcessors: Set<DashboardDataProcessor>
+class DashboardService(
+        private val thresholdService: DebtThresholdService,
+        private val debtService: DebtService,
+        private val incomeService: IncomeService,
+        private val dataProcessors: Set<DashboardDataProcessor>){
 
     fun retrieve(request: ParamsRequest): Mono<DashboardResponse> {
         return just(request)
@@ -61,6 +52,7 @@ class DashboardService {
     private fun collectData(parameters: List<ParameterResponse>,
                             incomes: List<IncomeResponse>,
                             debts: List<DebtResponse>): Mono<DashboardResponse> {
+
         val dashboard = dataProcessors.map { it.process(parameters, incomes, debts) }
                 .fold(mapOf<String, Any>()) { acc, current -> acc + current }
 

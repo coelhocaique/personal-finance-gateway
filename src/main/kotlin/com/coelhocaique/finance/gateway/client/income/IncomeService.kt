@@ -2,6 +2,7 @@ package com.coelhocaique.finance.gateway.client.income
 
 import com.coelhocaique.finance.gateway.client.HttpClientService
 import com.coelhocaique.finance.gateway.helper.ParamsRequest
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -33,10 +34,10 @@ class IncomeService {
     }
 
     fun retrieveByParam(request: ParamsRequest): Mono<List<IncomeResponse>> {
-        return client.getRequest(
+        return client.getListRequest(
                 baseUrl.plus("/v1/income?${request.getQueryParam()}"),
-                List::class.java,
-                request.headers) as Mono<List<IncomeResponse>>
+                jacksonTypeRef(),
+                request.headers)
     }
 
     fun deleteById(request: ParamsRequest): Mono<Void> {

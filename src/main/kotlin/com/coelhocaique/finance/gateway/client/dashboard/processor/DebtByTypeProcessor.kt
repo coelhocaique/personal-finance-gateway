@@ -7,14 +7,17 @@ import org.springframework.stereotype.Component
 import java.math.BigDecimal
 
 @Component
-class IncomeSumProcessor: DashboardDataProcessor {
+class DebtByTypeProcessor: DashboardDataProcessor {
 
     override fun process(parameters: List<ParameterResponse>,
                          incomes: List<IncomeResponse>,
                          debts: List<DebtResponse>): Map<String, Any> {
-        return mapOf(
-                "total_income_gross_amount" to incomes.fold(BigDecimal.ZERO) {sum, income -> sum.add(income.grossAmount)},
-                "total_income_net_amount" to incomes.fold(BigDecimal.ZERO) {sum, income -> sum.add(income.netAmount)}
-        )
+
+        val debtByType = debts.fold(mapOf<String, BigDecimal>().toMutableMap()) { acc, debt ->
+            acc[debt.type!!] = debt.amount!!.add(acc[debt.type] ?: BigDecimal.ZERO)
+            acc
+        }.entries.map { mapOf("y" to it.value.toString(), "name" to it.key) }
+
+        return mapOf("debt_by_type" to debtByType)
     }
 }

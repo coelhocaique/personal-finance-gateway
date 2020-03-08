@@ -1,5 +1,6 @@
 package com.coelhocaique.finance.gateway.routes
 
+import com.coelhocaique.finance.gateway.client.dashboard.DashboardHandler
 import com.coelhocaique.finance.gateway.client.debt.DebtHandler
 import com.coelhocaique.finance.gateway.client.debt.tag.DebtTagHandler
 import com.coelhocaique.finance.gateway.client.debt.threshold.DebtThresholdHandler
@@ -55,6 +56,11 @@ class ApiRouting {
         POST("/debt-threshold", handler::create)
         GET("/debt-threshold", handler::retrieveByParam)
         DELETE("/debt-threshold/{id}", handler::deleteById)
+    }
+
+    @Bean
+    fun dashboardRoutes(handler: DashboardHandler) = router {
+        GET("/dashboard", handler::retrieve)
     }
 
 }

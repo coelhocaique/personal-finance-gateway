@@ -1,23 +1,23 @@
 package com.coelhocaique.finance.gateway.client
 
+import com.coelhocaique.finance.gateway.client.income.IncomeResponse
 import com.coelhocaique.finance.gateway.helper.exception.ApiException
 import com.coelhocaique.finance.gateway.helper.logger
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.beans.factory.annotation.Autowired
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.core.publisher.Mono.just
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
-import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpRequest.BodyPublisher
+import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse
 
 @Component
-class HttpClientService {
-
-    @Autowired
-    private lateinit var mapper: ObjectMapper
+class HttpClientService(private val mapper: ObjectMapper) {
 
     fun <T> send(request: HttpRequest, clazz: Class<T>, successStatus: Int): Mono<T> {
         val httpClient = HttpClient.newBuilder()
@@ -29,7 +29,7 @@ class HttpClientService {
 
         logger().info("status=".plus(status).plus(", uri=").plus(request.uri().toString()))
 
-        if (status != successStatus) {
+        if (status == successStatus) {
             return if (status != 204)
                 Mono.just(mapper.readValue(response.body(), clazz))
             else
@@ -58,6 +58,14 @@ class HttpClientService {
 
         return send(httpRequest, clazz, 200)
     }
+
+    fun <T> getListRequest(uri: String, typeReference: TypeReference<T>,
+                           headers: Map<String, Any> = mapOf()
+    ): Mono<T> {
+        return getRequest(uri, List::class.java, headers)
+                .map { mapper.convertValue(it, typeReference)}
+    }
+
 
     fun deleteRequest(uri: String, headers: Map<String, Any> = mapOf()
     ): Mono<Void> {
