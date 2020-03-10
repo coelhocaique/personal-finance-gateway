@@ -27,8 +27,8 @@ data class IncomeResponse (
         val referenceDate: String? = null,
         val sourceName: String? = null,
         val accountId: UUID? = null,
-        val discounts: List<NestedObject>? = emptyList(),
-        val additions: List<NestedObject>? = emptyList(),
+        val discounts: List<NestedObject> = emptyList(),
+        val additions: List<NestedObject> = emptyList(),
         val creationDate: LocalDateTime? = null
 )
 

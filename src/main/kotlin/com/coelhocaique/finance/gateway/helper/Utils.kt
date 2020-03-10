@@ -7,11 +7,16 @@ import java.time.format.DateTimeFormatter
 
 fun <T : Any> T.logger(): Logger = LoggerFactory.getLogger(javaClass)
 
+private fun parseReferenceDate(date: String) =
+        LocalDate.parse(date.plus("01").trim(), DateTimeFormatter.ofPattern("YYYYMMDD"))
+
+fun parseAsYearMonth(date: String): String {
+    val date = parseReferenceDate(date)
+    return "${date.year}/${date.month.name}  "
+}
 
 fun subtractFromReferenceDate(date: String, months: Long): LocalDate {
-    return LocalDate.parse(date.plus("01"),
-            DateTimeFormatter.ofPattern("YYYYMMDD"))
-            .minusMonths(months)
+    return parseReferenceDate(date).minusMonths(months)
 }
 
 fun extractReferenceDate(parsedDate: LocalDate) = parsedDate.toString().substring(0, 6)
