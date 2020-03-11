@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter
 fun <T : Any> T.logger(): Logger = LoggerFactory.getLogger(javaClass)
 
 private fun parseReferenceDate(date: String) =
-        LocalDate.parse(date.plus("01").trim(), DateTimeFormatter.ofPattern("YYYYMMDD"))
+        LocalDate.parse(date.plus("01").trim(), DateTimeFormatter.ofPattern("yyyyMMdd"))
 
 fun parseAsYearMonth(date: String): String {
     val date = parseReferenceDate(date)
