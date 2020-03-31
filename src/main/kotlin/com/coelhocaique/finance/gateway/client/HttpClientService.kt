@@ -1,14 +1,11 @@
 package com.coelhocaique.finance.gateway.client
 
-import com.coelhocaique.finance.gateway.client.income.IncomeResponse
 import com.coelhocaique.finance.gateway.helper.exception.ApiException
 import com.coelhocaique.finance.gateway.helper.logger
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
-import reactor.core.publisher.Mono.just
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

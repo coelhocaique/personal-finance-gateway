@@ -11,8 +11,8 @@ private fun parseReferenceDate(date: String) =
         LocalDate.parse(date.plus("01").trim(), DateTimeFormatter.ofPattern("yyyyMMdd"))
 
 fun parseAsYearMonth(date: String): String {
-    val date = parseReferenceDate(date)
-    return "${date.year}/${date.month.name}  "
+    val parsedDate = parseReferenceDate(date)
+    return "${parsedDate.year}/${parsedDate.month.name}"
 }
 
 fun subtractFromReferenceDate(date: String, months: Long): LocalDate {
