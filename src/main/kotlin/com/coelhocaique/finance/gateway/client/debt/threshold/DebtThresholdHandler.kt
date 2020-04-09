@@ -14,23 +14,20 @@ import reactor.core.publisher.Mono
 class DebtThresholdHandler (private val service: DebtThresholdService) {
 
     fun create(req: ServerRequest): Mono<ServerResponse> {
-        val response = extractBody<ParameterRequest>(req)
+        return extractBody<ParameterRequest>(req)
                 .flatMap { service.create(it, retrieveHeaders(req)) }
-
-        return generateResponse(response, 201)
+                .let { generateResponse(it, 201) }
     }
 
-    fun retrieveByParam(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+    fun retrieveAll(req: ServerRequest): Mono<ServerResponse> {
+        return retrieveParamsRequest(req)
                 .flatMap { service.retrieveByParam(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 
     fun deleteById(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.deleteById(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 }

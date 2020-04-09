@@ -14,23 +14,20 @@ import reactor.core.publisher.Mono
 class DebtTagHandler (private val service: DebtTagService) {
 
     fun create(req: ServerRequest): Mono<ServerResponse> {
-        val response = extractBody<CustomAttributeRequest>(req)
+        return extractBody<CustomAttributeRequest>(req)
                 .flatMap { service.create(it, retrieveHeaders(req)) }
-
-        return generateResponse(response, 201)
+                .let { generateResponse(it, 201) }
     }
 
-    fun retrieveByParam(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+    fun retrieveAll(req: ServerRequest): Mono<ServerResponse> {
+        return retrieveParamsRequest(req)
                 .flatMap { service.retrieveAll(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 
     fun deleteById(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.deleteById(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 }

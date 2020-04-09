@@ -13,30 +13,26 @@ import reactor.core.publisher.Mono
 class IncomeHandler (private val service: IncomeService) {
 
     fun create(req: ServerRequest): Mono<ServerResponse> {
-        val response = extractBody<IncomeRequest>(req)
+        return extractBody<IncomeRequest>(req)
                 .flatMap { service.create(it, retrieveHeaders(req)) }
-
-        return generateResponse(response, 201)
+                .let { generateResponse(it, 201) }
     }
 
     fun retrieveById(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.retrieveById(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 
     fun retrieveByParam(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.retrieveByParam(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 
     fun deleteById(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.deleteById(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 }

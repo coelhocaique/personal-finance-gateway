@@ -16,7 +16,7 @@ import java.net.http.HttpResponse
 @Component
 class HttpClientService(private val mapper: ObjectMapper) {
 
-    fun <T> send(request: HttpRequest, clazz: Class<T>, successStatus: Int): Mono<T> {
+    private fun <T> send(request: HttpRequest, clazz: Class<T>, successStatus: Int): Mono<T> {
         val httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .build()
@@ -26,11 +26,11 @@ class HttpClientService(private val mapper: ObjectMapper) {
 
         logger().info("status=".plus(status).plus(", uri=").plus(request.uri().toString()))
 
-        if (status == successStatus) {
-            return if (status != 204)
-                Mono.just(mapper.readValue(response.body(), clazz))
-            else
+        if (status < 300) {
+            return if (status == 204 || status == 201)
                 Mono.empty()
+            else
+                Mono.just(mapper.readValue(response.body(), clazz))
         } else {
             val error = mapper.readValue(response.body(), ErrorResponse::class.java)
             throw ApiException(status, error.errors)
@@ -93,5 +93,4 @@ class HttpClientService(private val mapper: ObjectMapper) {
         else
             BodyPublishers.noBody()
     }
-
 }

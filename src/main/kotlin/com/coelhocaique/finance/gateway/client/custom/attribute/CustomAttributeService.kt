@@ -1,26 +1,20 @@
 package com.coelhocaique.finance.gateway.client.custom.attribute
 
-import com.coelhocaique.finance.gateway.client.HttpClientService
+import com.coelhocaique.finance.gateway.client.ClientConstants.CUSTOM_ATTRIBUTE_PATH
+import com.coelhocaique.finance.gateway.client.PersonalFinanceClient
 import com.coelhocaique.finance.gateway.helper.ParamsRequest
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 
 @Service
-class CustomAttributeService {
-
-    @Value("\${personal-finance-api.url}")
-    private lateinit var baseUrl: String
-
-    @Autowired
-    private lateinit var client: HttpClientService
-
+class CustomAttributeService(
+        private val client: PersonalFinanceClient
+) {
     fun create(request: CustomAttributeRequest?, paramsRequest: ParamsRequest): Mono<CustomAttributeResponse> {
         return client.postRequest(
-                baseUrl.plus("/v1/custom-attribute"),
+                CUSTOM_ATTRIBUTE_PATH,
                 request,
                 CustomAttributeResponse::class.java,
                 paramsRequest.headers)
@@ -28,14 +22,14 @@ class CustomAttributeService {
 
     fun retrieveByParam(request: ParamsRequest): Mono<List<CustomAttributeResponse>> {
         return client.getListRequest(
-                baseUrl.plus("/v1/custom-attribute?${request.getQueryParam()}"),
+                CUSTOM_ATTRIBUTE_PATH.plus("?${request.getQueryParam()}"),
                 jacksonTypeRef(),
                 request.headers)
     }
 
     fun deleteById(request: ParamsRequest): Mono<Void> {
         return client.deleteRequest(
-                baseUrl.plus("/v1/custom-attribute/${request.id}"),
+                CUSTOM_ATTRIBUTE_PATH.plus("/${request.id}"),
                 request.headers)
     }
 }

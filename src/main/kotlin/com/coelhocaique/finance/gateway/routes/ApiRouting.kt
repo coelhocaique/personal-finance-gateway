@@ -33,8 +33,9 @@ class ApiRouting {
         POST("/debt", handler::create)
         GET("/debt", handler::retrieveByParam)
         GET("/debt/{id}", handler::retrieveById)
+        GET("/debt-new", handler::retrieveCreation)
         DELETE("/debt/{id}", handler::deleteById)
-        DELETE("/delete", handler::deleteByParam)
+        DELETE("/debt", handler::deleteByParam)
     }
 
     @Bean
@@ -47,14 +48,14 @@ class ApiRouting {
     @Bean
     fun debtTagRoutes(handler: DebtTagHandler) = router {
         POST("/debt-tag", handler::create)
-        GET("/debt-tag", handler::retrieveByParam)
+        GET("/debt-tag", handler::retrieveAll)
         DELETE("/debt-tag/{id}", handler::deleteById)
     }
 
     @Bean
     fun debtThresholdRoutes(handler: DebtThresholdHandler) = router {
         POST("/debt-threshold", handler::create)
-        GET("/debt-threshold", handler::retrieveByParam)
+        GET("/debt-threshold", handler::retrieveAll)
         DELETE("/debt-threshold/{id}", handler::deleteById)
     }
 
@@ -62,5 +63,4 @@ class ApiRouting {
     fun dashboardRoutes(handler: DashboardHandler) = router {
         GET("/dashboard", handler::retrieve)
     }
-
 }

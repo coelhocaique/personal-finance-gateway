@@ -10,40 +10,42 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 
 @Component
-class DebtHandler (private val service: DebtService) {
+class DebtHandler (private val service: DebtService,
+                   private val retrievalService: DebtRetrievalService) {
 
     fun create(req: ServerRequest): Mono<ServerResponse> {
-        val response = extractBody<DebtRequest>(req)
+        return extractBody<DebtRequest>(req)
                 .flatMap { service.create(it, retrieveHeaders(req)) }
-
-        return generateResponse(response, 201)
+                .let { generateResponse(it, 201) }
     }
 
     fun retrieveById(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.retrieveById(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 
     fun retrieveByParam(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
-                .flatMap { service.retrieveByParam(it) }
+        return retrieveParamsRequest(req)
+                .flatMap { retrievalService.retrieveByParam(it)}
+                .let { generateResponse(it) }
+    }
 
-        return generateResponse(response)
+    fun retrieveCreation(req: ServerRequest): Mono<ServerResponse> {
+        return retrieveParamsRequest(req)
+                .flatMap { retrievalService.retrieveCreation(it)}
+                .let { generateResponse(it) }
     }
 
     fun deleteById(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.deleteById(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 
     fun deleteByParam(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.deleteByParam(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 }

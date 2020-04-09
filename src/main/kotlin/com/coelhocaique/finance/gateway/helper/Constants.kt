@@ -14,4 +14,5 @@ object Fields {
     const val DEBT_TYPE = "debt_type"
     const val DEBT_TAG = "debt_tag"
     const val THRESHOLD = "threshold"
+    const val NAME = "name"
 }

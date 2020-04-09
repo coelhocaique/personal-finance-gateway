@@ -11,16 +11,14 @@ import reactor.core.publisher.Mono
 class UserHandler (private val service: UserService) {
 
     fun create(req: ServerRequest): Mono<ServerResponse> {
-        val response = extractBody<UserCreationRequest>(req)
+        return extractBody<UserCreationRequest>(req)
                 .flatMap { service.create(it) }
-
-        return generateResponse(response, 201)
+                .let { generateResponse(it, 201) }
     }
 
     fun authenticate(req: ServerRequest): Mono<ServerResponse> {
-        val response = extractBody<UserAuthenticationRequest>(req)
+        return extractBody<UserAuthenticationRequest>(req)
                 .flatMap { service.authenticate(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 }

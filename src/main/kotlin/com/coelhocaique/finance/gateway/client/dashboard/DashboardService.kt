@@ -24,7 +24,7 @@ class DashboardService(
         private val incomeService: IncomeService,
         private val dataProcessors: Set<DashboardDataProcessor>){
 
-    fun retrieve(request: ParamsRequest): Mono<DashboardResponse> {
+    fun retrieve(request: ParamsRequest): Mono<Map<String, Any>> {
         return just(request)
                 .map { it.queryParams }
                 .map { castToPair(it) }
@@ -38,12 +38,12 @@ class DashboardService(
     }
 
     private fun retrieveData(dates: Pair<String, String>,
-                             request: ParamsRequest): Mono<DashboardResponse> {
+                             request: ParamsRequest): Mono<Map<String, Any>> {
 
         val newRequest = request.copy(queryParams = mapOf(FROM_DATE to dates.first, TO_DATE to dates.second))
-        val thresholds = thresholdService.retrieveByParam(newRequest)
-        val incomes = incomeService.retrieveByParam(newRequest)
-        val debts = debtService.retrieveByParam(request)
+        val thresholds = thresholdService.retrieveByParam(newRequest).switchIfEmpty(just(listOf()))
+        val incomes = incomeService.retrieveByParam(newRequest).switchIfEmpty(just(listOf()))
+        val debts = debtService.retrieveByParam(request).switchIfEmpty(just(listOf()))
 
         return Mono.zip(thresholds, incomes, debts)
                 .flatMap { collectData(it.t1, it.t2, it.t3) }
@@ -51,11 +51,10 @@ class DashboardService(
 
     private fun collectData(parameters: List<ParameterResponse>,
                             incomes: List<IncomeResponse>,
-                            debts: List<DebtResponse>): Mono<DashboardResponse> {
+                            debts: List<DebtResponse>): Mono<Map<String, Any>> {
 
-        val dashboard = dataProcessors.map { it.process(parameters, incomes, debts) }
+        return dataProcessors.map { it.process(parameters, incomes, debts) }
                 .fold(mapOf<String, Any>()) { acc, current -> acc + current }
-
-        return just(DashboardResponse(dashboard))
+                .let { just(it) }
     }
 }

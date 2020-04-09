@@ -32,3 +32,10 @@ data class DebtResponse (
         val creationDate: LocalDateTime? = null
 )
 
+data class DebtRetrievalResponse (
+        val debts: List<DebtResponse>? = null,
+        val types: List<String>? = null,
+        val tags: List<String>? = null,
+        val threshold: BigDecimal? = null
+)
+

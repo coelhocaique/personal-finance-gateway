@@ -1,33 +1,28 @@
 package com.coelhocaique.finance.gateway.client.user
 
-import com.coelhocaique.finance.gateway.client.HttpClientService
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
+import com.coelhocaique.finance.gateway.client.ClientConstants.USER_AUTHENTICATION_PATH
+import com.coelhocaique.finance.gateway.client.ClientConstants.USER_PATH
+import com.coelhocaique.finance.gateway.client.UserClient
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 
 @Service
-class UserService {
-
-    @Value("\${account-service-api.url}")
-    private lateinit var baseUrl: String
-
-    @Autowired
-    private lateinit var client: HttpClientService
+class UserService(
+        private val client: UserClient
+) {
 
     fun authenticate(request: UserAuthenticationRequest?): Mono<UserResponse> {
         return client.postRequest(
-                baseUrl.plus("/v1/user/authenticate"),
+                USER_AUTHENTICATION_PATH,
                 request,
                 UserResponse::class.java)
     }
 
     fun create(request: UserCreationRequest?): Mono<UserResponse> {
         return client.postRequest(
-                baseUrl.plus("/v1/user"),
+                USER_PATH,
                 request,
                 UserResponse::class.java)
     }
-
 }

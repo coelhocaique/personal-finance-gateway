@@ -11,9 +11,8 @@ import reactor.core.publisher.Mono
 class DashboardHandler (private val service: DashboardService) {
 
     fun retrieve(req: ServerRequest): Mono<ServerResponse> {
-        val response = retrieveParamsRequest(req)
+        return retrieveParamsRequest(req)
                 .flatMap { service.retrieve(it) }
-
-        return generateResponse(response)
+                .let { generateResponse(it) }
     }
 }
