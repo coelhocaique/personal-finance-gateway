@@ -2,6 +2,7 @@ package com.coelhocaique.finance.gateway.routes
 
 import com.coelhocaique.finance.gateway.client.dashboard.DashboardHandler
 import com.coelhocaique.finance.gateway.client.debt.DebtHandler
+import com.coelhocaique.finance.gateway.client.debt.recurring.RecurringDebtHandler
 import com.coelhocaique.finance.gateway.client.debt.tag.DebtTagHandler
 import com.coelhocaique.finance.gateway.client.debt.threshold.DebtThresholdHandler
 import com.coelhocaique.finance.gateway.client.debt.type.DebtTypeHandler
@@ -62,5 +63,13 @@ class ApiRouting {
     @Bean
     fun dashboardRoutes(handler: DashboardHandler) = router {
         GET("/dashboard", handler::retrieve)
+    }
+
+    @Bean
+    fun recurringDebtRoutes(handler: RecurringDebtHandler) = router {
+        POST("/debt-recurring", handler::create)
+        GET("/debt-recurring", handler::retrieveAll)
+        GET("/debt-recurring/{id}", handler::retrieveById)
+        DELETE("/debt-recurring/{id}", handler::deleteById)
     }
 }

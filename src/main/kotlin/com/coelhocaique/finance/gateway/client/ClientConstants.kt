@@ -13,4 +13,6 @@ object ClientConstants {
     const val PARAMETER_PATH = "/v1/parameter"
 
     const val INCOME_PATH = "/v1/income"
+
+    const val RECURRING_DEBT_PATH = "/v1/recurring-debt"
 }

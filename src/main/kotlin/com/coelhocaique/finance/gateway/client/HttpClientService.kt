@@ -16,7 +16,7 @@ import java.net.http.HttpResponse
 @Component
 class HttpClientService(private val mapper: ObjectMapper) {
 
-    private fun <T> send(request: HttpRequest, clazz: Class<T>, successStatus: Int): Mono<T> {
+    private fun <T> send(request: HttpRequest, clazz: Class<T>): Mono<T> {
         val httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .build()
@@ -44,7 +44,7 @@ class HttpClientService(private val mapper: ObjectMapper) {
 
         val httpRequest = buildHttpRequest(uri, body, "POST", headers)
 
-        return send(httpRequest, clazz, 201)
+        return send(httpRequest, clazz)
     }
 
     fun <T> getRequest(uri: String, clazz: Class<T>,
@@ -53,7 +53,7 @@ class HttpClientService(private val mapper: ObjectMapper) {
 
         val httpRequest = buildHttpRequest(uri, null, "GET", headers)
 
-        return send(httpRequest, clazz, 200)
+        return send(httpRequest, clazz)
     }
 
     fun <T> getListRequest(uri: String, typeReference: TypeReference<T>,
@@ -69,7 +69,7 @@ class HttpClientService(private val mapper: ObjectMapper) {
 
         val httpRequest = buildHttpRequest(uri, null, "DELETE", headers)
 
-        return send(httpRequest, Void::class.java, 204)
+        return send(httpRequest, Void::class.java)
     }
 
     private fun buildHttpRequest(uri: String,
