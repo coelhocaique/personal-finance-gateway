@@ -10,7 +10,10 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 
 @Component
-class RecurringDebtHandler (private val service: RecurringDebtService) {
+class RecurringDebtHandler (
+        private val service: RecurringDebtService,
+        private val retrievalService: RecurringDebtRetrievalService
+) {
 
     fun create(req: ServerRequest): Mono<ServerResponse> {
         return extractBody<RecurringDebtRequest>(req)
@@ -27,6 +30,12 @@ class RecurringDebtHandler (private val service: RecurringDebtService) {
     fun retrieveById(req: ServerRequest): Mono<ServerResponse> {
         return retrieveParamsRequest(req)
                 .flatMap { service.retrieveById(it) }
+                .let { generateResponse(it) }
+    }
+
+    fun retrieveCreation(req: ServerRequest): Mono<ServerResponse> {
+        return retrieveParamsRequest(req)
+                .flatMap { retrievalService.retrieveCreation(it) }
                 .let { generateResponse(it) }
     }
 

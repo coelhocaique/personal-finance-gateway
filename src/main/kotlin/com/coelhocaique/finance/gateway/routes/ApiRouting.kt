@@ -67,9 +67,10 @@ class ApiRouting {
 
     @Bean
     fun recurringDebtRoutes(handler: RecurringDebtHandler) = router {
-        POST("/debt-recurring", handler::create)
-        GET("/debt-recurring", handler::retrieveAll)
-        GET("/debt-recurring/{id}", handler::retrieveById)
-        DELETE("/debt-recurring/{id}", handler::deleteById)
+        POST("/recurring-debt", handler::create)
+        GET("/recurring-debt", handler::retrieveAll)
+        GET("/recurring-debt-new", handler::retrieveCreation)
+        GET("/recurring-debt/{id}", handler::retrieveById)
+        DELETE("/recurring-debt/{id}", handler::deleteById)
     }
 }

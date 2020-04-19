@@ -21,3 +21,8 @@ data class RecurringDebtResponse (
         val creationDate: LocalDateTime? = null
 )
 
+data class RecurringDebtRetrievalResponse (
+        val types: List<String>,
+        val tags: List<String>
+)
+
