@@ -17,7 +17,6 @@ data class RecurringDebtResponse (
         val description: String? = null,
         val type: String? = null,
         val tag: String? = null,
-        val referenceCode: UUID? = null,
         val creationDate: LocalDateTime? = null
 )
 
